@@ -1,0 +1,46 @@
+#!/sbin/sh
+# Based on Dummy installer by _that@xda
+# https://github.com/that1/zipinstalltests
+set -e
+
+#apilevel=$1
+fd=$2
+#zipfile=$3
+
+ui_print() {
+	while [ $# -gt 0 ]; do
+		echo -n -e "ui_print $1\n" > /proc/self/fd/$fd
+		echo -n -e "ui_print\n" > /proc/self/fd/$fd
+		shift
+	done
+}
+
+progress() {
+	echo "progress ${1} ${2} " > /proc/self/fd/$fd
+}
+
+set_progress() {
+	echo "set_progress ${1} " > /proc/self/fd/$fd
+}
+
+set_prop() {
+	prop=/system/build.prop
+	if [ ! -f ${prop} ]; then
+		mount /system_root
+	fi
+	if grep -q "${1}=.*" "${prop}"; then
+		# edit entry
+		ui_print "Update property ${1} to ${2}"
+		sed "s/\(${1}=\).*/\1${2}/g" -i "${prop}"
+	else
+		# new entry
+		ui_print "Add property ${1} with value ${2}"
+		echo "${1}=${2}" >> ${prop}
+	fi
+}
+
+
+ui_print "== Patch Fairphone 3 GSI =="
+ui_print "by basxto"
+set_prop "qemu.hw.mainkeys" 0
+ui_print "All done"
