@@ -1,3 +1,5 @@
+## This is deprecated, please use https://github.com/basxto/vendor_hardware_overlay
+
 Dependencies:
 * zip
 
